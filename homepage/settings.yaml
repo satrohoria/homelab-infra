@@ -1,0 +1,23 @@
+title: Homelab
+
+language: pt-BR
+
+theme: dark
+color: slate
+
+headerStyle: clean
+statusStyle: dot
+hideVersion: true
+
+layout:
+  Infraestrutura:
+    style: row
+    columns: 3
+
+  Monitoramento:
+    style: row
+    columns: 5
+
+  Serviços:
+    style: row
+    columns: 2

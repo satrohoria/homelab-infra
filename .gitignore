@@ -1,0 +1,47 @@
+# Secrets / environment
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+
+# Private keys / certificates
+*.key
+*.pem
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+*.p12
+*.pfx
+
+# Application data
+data/
+config/
+logs/
+backups/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Vaultwarden
+vaultwarden/data/
+
+# Caddy private PKI
+caddy/data/
+caddy/config/
+
+# Home Assistant runtime/configuration
+homeassistant/config/
+
+# Pi-hole runtime
+pihole/etc-pihole/
+pihole/etc-dnsmasq.d/
+
+# Temporary files
+*.tmp
+*.bak
+*~
+.DS_Store
+Thumbs.db

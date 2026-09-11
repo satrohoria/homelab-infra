@@ -1,0 +1,116 @@
+- Infraestrutura:
+    - Pi-hole:
+        icon: pi-hole
+        href: https://pihole.home/admin/
+        description: DNS e bloqueio de anúncios
+        server: local
+        container: pihole
+
+    - Uptime Kuma:
+        icon: uptime-kuma
+        href: https://status.home
+        description: Disponibilidade dos serviços
+        server: local
+        container: uptime-kuma
+
+    - Portainer:
+        icon: portainer
+        href: https://portainer.home
+        description: Gerenciamento dos containers
+        server: local
+        container: portainer
+
+    - Caddy:
+        icon: caddy
+        description: Reverse Proxy e HTTPS
+        server: local
+        container: caddy
+
+
+- Monitoramento:
+    - Beszel:
+        icon: beszel
+        href: https://beszel.home
+        description: Monitoramento do servidor
+        server: local
+        container: beszel
+
+    - Dozzle:
+        icon: dozzle
+        href: https://logs.home
+        description: Logs dos containers
+        server: local
+        container: dozzle
+
+    - Scrutiny:
+        icon: scrutiny
+        href: https://scrutiny.home
+        description: Saúde do SSD
+        server: local
+        container: scrutiny
+
+    - Speedtest Tracker:
+        icon: speedtest-tracker
+        href: https://speedtest.home
+        description: Speedtest pelo Dell (100 Mbps)
+        server: local
+        container: speedtest-tracker
+
+    - Speedtest Desktop:
+        icon: mdi-speedometer
+        href: https://speedpc.home
+        description: Internet via Desktop Gigabit
+
+        widget:
+          type: customapi
+          url: https://speedpc.home/speedtest-latest.json
+          refreshInterval: 60000
+
+          mappings:
+            - field: DownloadMbps
+              label: Download
+              format: float
+              suffix: " Mbps"
+
+            - field: UploadMbps
+              label: Upload
+              format: float
+              suffix: " Mbps"
+
+            - field: PingMs
+              label: Ping
+              format: float
+              suffix: " ms"
+
+            - field: PacketLoss
+              label: Perda
+              format: float
+              suffix: " %"
+
+
+- Serviços:
+    - Unbound:
+        icon: unbound
+        description: DNS recursivo
+        server: local
+        container: unbound
+
+    - Diun:
+        icon: diun
+        description: Monitoramento de atualizações Docker
+        server: local
+        container: diun
+
+    - Vaultwarden:
+        icon: vaultwarden
+        href: https://vault.home
+        description: Gerenciador de senhas
+        server: local
+        container: vaultwarden
+
+    - Home Assistant:
+        icon: home-assistant
+        href: https://casa.home
+        description: Automação residencial
+        server: local
+        container: homeassistant

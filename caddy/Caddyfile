@@ -1,0 +1,60 @@
+https://beszel.home {
+    tls internal
+    reverse_proxy 192.168.0.2:8090
+}
+
+https://logs.home {
+    tls internal
+    reverse_proxy 192.168.0.2:8080
+}
+
+https://speedtest.home {
+    tls internal
+    reverse_proxy 192.168.0.2:8087
+}
+
+https://status.home {
+    tls internal
+    reverse_proxy 192.168.0.2:3001
+}
+
+https://portainer.home {
+    tls internal
+    reverse_proxy https://192.168.0.2:9443 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+https://pihole.home {
+    tls internal
+    reverse_proxy 192.168.0.2:8081
+}
+
+https://scrutiny.home {
+    tls internal
+    reverse_proxy 192.168.0.2:8086
+}
+
+https://homelab.home {
+    tls internal
+    reverse_proxy 192.168.0.2:3000
+}
+
+https://vault.home {
+    tls internal
+    reverse_proxy vaultwarden:80
+}
+
+https://casa.home {
+    tls internal
+    reverse_proxy 192.168.0.2:8123
+}
+
+https://speedpc.home {
+    tls internal
+
+    root * /srv/speedpc
+    file_server
+}
