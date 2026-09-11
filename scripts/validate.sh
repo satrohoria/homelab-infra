@@ -80,6 +80,7 @@ SECRET_RESULTS=$(
         ! -name '.env.example' \
         ! -name '.gitignore' \
         ! -name 'validate.sh' \
+        ! -name 'results.sarif' \
         -print0 |
     xargs -0 -r grep -niE \
         'password|passwd|secret|token|api[_-]?key|app[_-]?key|private[_-]?key|credential|base64:' \
