@@ -33,7 +33,7 @@ cd "$ROOT_DIR" || exit 1
 # 1. Verificar arquivos sensíveis
 # --------------------------------------------------
 
-echo "[1/5] Verificando arquivos sensíveis..."
+echo "[1/6] Verificando arquivos sensíveis..."
 
 test_started
 
@@ -68,7 +68,7 @@ echo
 # 2. Verificar possíveis secrets
 # --------------------------------------------------
 
-echo "[2/5] Procurando possíveis secrets..."
+echo "[2/6] Procurando possíveis secrets..."
 
 test_started
 
@@ -92,9 +92,15 @@ while IFS= read -r line; do
 
     [ -z "$line" ] && continue
 
-    # Ignora variáveis de ambiente, por exemplo:
+    # Ignora variáveis de ambiente tradicionais:
     # ${BESZEL_AGENT_TOKEN}
     if echo "$line" | grep -qE '\$\{[A-Za-z_][A-Za-z0-9_]*\}'; then
+        continue
+    fi
+
+    # Ignora referências legítimas a GitHub Actions secrets:
+    # ${{ secrets.GITHUB_TOKEN }}
+    if echo "$line" | grep -qE '\$\{\{[[:space:]]*secrets\.[A-Za-z0-9_]+[[:space:]]*\}\}'; then
         continue
     fi
 
@@ -116,7 +122,7 @@ echo
 # 3. Validar Docker Compose
 # --------------------------------------------------
 
-echo "[3/5] Validando Docker Compose..."
+echo "[3/6] Validando Docker Compose..."
 
 while IFS= read -r compose; do
 
@@ -156,7 +162,7 @@ echo
 # 4. Validar Caddy
 # --------------------------------------------------
 
-echo "[4/5] Validando Caddyfile..."
+echo "[4/6] Validando Caddyfile..."
 
 test_started
 
@@ -187,17 +193,21 @@ echo
 # 5. Verificar estrutura do projeto
 # --------------------------------------------------
 
-echo "[5/5] Verificando estrutura..."
+echo "[5/6] Verificando estrutura..."
 
 REQUIRED_PATHS=(
     "README.md"
     ".gitignore"
     ".env.example"
+    ".yamllint"
     "docker"
     "caddy"
     "homepage"
     "scripts"
     "docs"
+    "ansible"
+    "apps"
+    "windows"
 )
 
 for item in "${REQUIRED_PATHS[@]}"; do
@@ -211,6 +221,38 @@ for item in "${REQUIRED_PATHS[@]}"; do
     fi
 
 done
+
+echo
+
+
+# --------------------------------------------------
+# 6. Validar Markdown
+# --------------------------------------------------
+
+echo "[6/6] Validando arquivos Markdown..."
+
+MARKDOWN_ERRORS=0
+
+while IFS= read -r file; do
+
+    fences=$(grep -cE '^[[:space:]]*```' "$file" || true)
+
+    if (( fences % 2 != 0 )); then
+        echo "✗ Bloco de código Markdown não fechado: $file"
+        MARKDOWN_ERRORS=$((MARKDOWN_ERRORS + 1))
+    else
+        echo "✓ $file"
+    fi
+
+done < <(
+    find . \
+        -path './.git' -prune -o \
+        -type f -name '*.md' -print | sort
+)
+
+if (( MARKDOWN_ERRORS > 0 )); then
+    ERRORS=$((ERRORS + MARKDOWN_ERRORS))
+fi
 
 
 # --------------------------------------------------

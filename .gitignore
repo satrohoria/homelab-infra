@@ -18,6 +18,9 @@ id_ed25519.*
 # Application data
 data/
 config/
+# Homepage config is Infrastructure as Code
+!docker/homepage/config/
+!docker/homepage/config/*.yaml
 logs/
 backups/
 *.db

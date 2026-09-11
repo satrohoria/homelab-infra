@@ -1,0 +1,28 @@
+---
+- name: Baseline do servidor Homelab
+  hosts: homelab
+  become: true
+
+  tasks:
+    - name: Atualizar cache do APT
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Instalar pacotes básicos
+      ansible.builtin.apt:
+        name: "{{ baseline_packages }}"
+        state: present
+
+    - name: Definir timezone
+      community.general.timezone:
+        name: "{{ homelab_timezone }}"
+
+    - name: Garantir diretórios principais
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ homelab_user }}"
+        group: "{{ homelab_user }}"
+        mode: "0755"
+      loop: "{{ homelab_directories }}"

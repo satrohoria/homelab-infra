@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Speedtest Desktop</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .card,
+    .panel {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .label {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .value {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 7px;
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .status-excellent {
+      color: #22c55e;
+    }
+
+    .status-good {
+      color: #84cc16;
+    }
+
+    .status-warning {
+      color: #f59e0b;
+    }
+
+    .status-bad {
+      color: #ef4444;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .info-value {
+      margin-top: 6px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .chart-container {
+      height: 340px;
+      margin-bottom: 15px;
+    }
+
+    .chart-container canvas {
+      max-height: 300px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1e293b;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 11px;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #334155;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .footer {
+      margin-top: 12px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .error {
+      display: none;
+      background: #7f1d1d;
+      color: #fecaca;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 700px) {
+
+      body {
+        padding: 10px;
+      }
+
+      .value {
+        font-size: 22px;
+      }
+
+      .chart-container {
+        height: 280px;
+      }
+
+      th,
+      td {
+        font-size: 12px;
+        padding: 9px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>Speedtest Desktop</h1>
+
+    <div class="subtitle">
+      Medição feita pelo desktop via Gigabit Ethernet
+    </div>
+  </div>
+
+
+  <div id="error" class="error"></div>
+
+
+  <!-- CARDS PRINCIPAIS -->
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="label">Download</div>
+
+      <div class="value" id="download">
+        --
+      </div>
+
+      <div class="status" id="downloadStatus">
+        --
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="label">Upload</div>
+
+      <div class="value" id="upload">
+        --
+      </div>
+
+      <div class="status" id="uploadStatus">
+        --
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="label">Ping</div>
+
+      <div class="value" id="ping">
+        --
+      </div>
+
+      <div class="status" id="pingStatus">
+        --
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="label">Jitter</div>
+
+      <div class="value" id="jitter">
+        --
+      </div>
+
+      <div class="status" id="jitterStatus">
+        --
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="label">Perda</div>
+
+      <div class="value" id="loss">
+        --
+      </div>
+
+      <div class="status" id="lossStatus">
+        --
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- INFORMAÇÕES -->
+
+  <div class="info-grid">
+
+    <div class="panel">
+      <div class="label">
+        ISP
+      </div>
+
+      <div class="info-value" id="isp">
+        --
+      </div>
+    </div>
+
+
+    <div class="panel">
+      <div class="label">
+        Servidor
+      </div>
+
+      <div class="info-value" id="server">
+        --
+      </div>
+    </div>
+
+
+    <div class="panel">
+      <div class="label">
+        Último teste
+      </div>
+
+      <div class="info-value" id="lastTest">
+        --
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- GRÁFICO -->
+
+  <div class="panel chart-container">
+    <canvas id="speedChart"></canvas>
+  </div>
+
+
+  <!-- HISTÓRICO -->
+
+  <div class="table-container">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Download</th>
+          <th>Upload</th>
+          <th>Ping</th>
+          <th>Jitter</th>
+          <th>Perda</th>
+          <th>Servidor</th>
+        </tr>
+      </thead>
+
+      <tbody id="history">
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- RODAPÉ -->
+
+  <div class="footer" id="update">
+    Aguardando dados...
+  </div>
+
+  <div class="footer" id="nextRefresh">
+    Próxima atualização em 60s
+  </div>
+
+
+<script>
+
+let chart = null;
+
+let refreshCountdown = 60;
+
+
+/* =========================
+   FORMATAÇÃO
+========================= */
+
+function formatNumber(value, decimals = 2) {
+
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return '--';
+  }
+
+  return number.toLocaleString(
+    'pt-BR',
+    {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    }
+  );
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function setStatus(elementId, text, statusClass) {
+
+  const element =
+    document.getElementById(elementId);
+
+  element.innerText = '● ' + text;
+
+  element.className =
+    'status ' + statusClass;
+}
+
+
+function qualityDownload(value) {
+
+  if (value >= 400) {
+    return ['Excelente', 'status-excellent'];
+  }
+
+  if (value >= 300) {
+    return ['Bom', 'status-good'];
+  }
+
+  if (value >= 200) {
+    return ['Atenção', 'status-warning'];
+  }
+
+  return ['Ruim', 'status-bad'];
+}
+
+
+function qualityUpload(value) {
+
+  if (value >= 40) {
+    return ['Excelente', 'status-excellent'];
+  }
+
+  if (value >= 30) {
+    return ['Bom', 'status-good'];
+  }
+
+  if (value >= 20) {
+    return ['Atenção', 'status-warning'];
+  }
+
+  return ['Ruim', 'status-bad'];
+}
+
+
+function qualityPing(value) {
+
+  if (value <= 15) {
+    return ['Excelente', 'status-excellent'];
+  }
+
+  if (value <= 30) {
+    return ['Bom', 'status-good'];
+  }
+
+  if (value <= 50) {
+    return ['Atenção', 'status-warning'];
+  }
+
+  return ['Ruim', 'status-bad'];
+}
+
+
+function qualityJitter(value) {
+
+  if (value <= 5) {
+    return ['Excelente', 'status-excellent'];
+  }
+
+  if (value <= 15) {
+    return ['Bom', 'status-good'];
+  }
+
+  if (value <= 30) {
+    return ['Atenção', 'status-warning'];
+  }
+
+  return ['Ruim', 'status-bad'];
+}
+
+
+function qualityLoss(value) {
+
+  if (value === 0) {
+    return ['Excelente', 'status-excellent'];
+  }
+
+  if (value <= 1) {
+    return ['Atenção', 'status-warning'];
+  }
+
+  return ['Ruim', 'status-bad'];
+}
+
+
+/* =========================
+   CARREGAR CSV
+========================= */
+
+async function loadCSV() {
+
+  try {
+
+    const response = await fetch(
+      'speedtest-history.csv?t=' + Date.now(),
+      {
+        cache: 'no-store'
+      }
+    );
+
+    if (!response.ok) {
+
+      throw new Error(
+        'Não foi possível carregar o histórico.'
+      );
+    }
+
+
+    const text =
+      await response.text();
+
+
+    if (!text.trim()) {
+
+      throw new Error(
+        'O arquivo de histórico está vazio.'
+      );
+    }
+
+
+    const lines =
+      text
+        .trim()
+        .split(/\r?\n/);
+
+
+    if (lines.length < 2) {
+
+      throw new Error(
+        'Ainda não existem medições no histórico.'
+      );
+    }
+
+
+    /*
+       Nosso CSV é produzido pelo PowerShell
+       com todos os campos entre aspas.
+    */
+
+    const parseLine = (line) => {
+
+      return line
+        .replace(/^"/, '')
+        .replace(/"$/, '')
+        .split('","')
+        .map(value =>
+          value.replace(/""/g, '"')
+        );
+    };
+
+
+    const headers =
+      parseLine(lines[0]);
+
+
+    const data =
+      lines
+        .slice(1)
+        .map(line => {
+
+          const values =
+            parseLine(line);
+
+          const obj = {};
+
+          headers.forEach(
+            (header, index) => {
+
+              obj[header] =
+                values[index] ?? '';
+            }
+          );
+
+          return obj;
+        })
+        .filter(row =>
+          row.Timestamp
+        );
+
+
+    if (!data.length) {
+
+      throw new Error(
+        'Nenhuma medição válida encontrada.'
+      );
+    }
+
+
+    const latest =
+      data[data.length - 1];
+
+
+    /* =========================
+       VALORES
+    ========================= */
+
+    const download =
+      Number(latest.DownloadMbps);
+
+    const upload =
+      Number(latest.UploadMbps);
+
+    const ping =
+      Number(latest.PingMs);
+
+    const jitter =
+      Number(latest.JitterMs);
+
+    const loss =
+      Number(latest.PacketLoss);
+
+
+    document.getElementById('download').innerText =
+      formatNumber(download) + ' Mbps';
+
+    document.getElementById('upload').innerText =
+      formatNumber(upload) + ' Mbps';
+
+    document.getElementById('ping').innerText =
+      formatNumber(ping) + ' ms';
+
+    document.getElementById('jitter').innerText =
+      formatNumber(jitter) + ' ms';
+
+    document.getElementById('loss').innerText =
+      formatNumber(loss) + ' %';
+
+
+    /* =========================
+       QUALIDADE
+    ========================= */
+
+    const downloadQuality =
+      qualityDownload(download);
+
+    setStatus(
+      'downloadStatus',
+      downloadQuality[0],
+      downloadQuality[1]
+    );
+
+
+    const uploadQuality =
+      qualityUpload(upload);
+
+    setStatus(
+      'uploadStatus',
+      uploadQuality[0],
+      uploadQuality[1]
+    );
+
+
+    const pingQuality =
+      qualityPing(ping);
+
+    setStatus(
+      'pingStatus',
+      pingQuality[0],
+      pingQuality[1]
+    );
+
+
+    const jitterQuality =
+      qualityJitter(jitter);
+
+    setStatus(
+      'jitterStatus',
+      jitterQuality[0],
+      jitterQuality[1]
+    );
+
+
+    const lossQuality =
+      qualityLoss(loss);
+
+    setStatus(
+      'lossStatus',
+      lossQuality[0],
+      lossQuality[1]
+    );
+
+
+    /* =========================
+       INFORMAÇÕES
+    ========================= */
+
+    document.getElementById('isp').innerText =
+      latest.ISP || '--';
+
+    document.getElementById('server').innerText =
+      latest.Server || '--';
+
+    document.getElementById('lastTest').innerText =
+      new Date(
+        latest.Timestamp
+      ).toLocaleString('pt-BR');
+
+
+    /* =========================
+       TABELA
+    ========================= */
+
+    const history =
+      data
+        .slice(-20)
+        .reverse();
+
+
+    const tbody =
+      document.getElementById('history');
+
+
+    tbody.innerHTML = '';
+
+
+    history.forEach(row => {
+
+      const tr =
+        document.createElement('tr');
+
+
+      tr.innerHTML = `
+
+        <td>
+          ${new Date(
+            row.Timestamp
+          ).toLocaleString('pt-BR')}
+        </td>
+
+        <td>
+          ${formatNumber(row.DownloadMbps)} Mbps
+        </td>
+
+        <td>
+          ${formatNumber(row.UploadMbps)} Mbps
+        </td>
+
+        <td>
+          ${formatNumber(row.PingMs)} ms
+        </td>
+
+        <td>
+          ${formatNumber(row.JitterMs)} ms
+        </td>
+
+        <td>
+          ${formatNumber(row.PacketLoss)}%
+        </td>
+
+        <td>
+          ${row.Server || '--'}
+        </td>
+
+      `;
+
+
+      tbody.appendChild(tr);
+    });
+
+
+    /* =========================
+       GRÁFICO
+    ========================= */
+
+    const chartData =
+      data.slice(-30);
+
+
+    if (chart) {
+      chart.destroy();
+    }
+
+
+    chart =
+      new Chart(
+        document.getElementById(
+          'speedChart'
+        ),
+        {
+
+          type: 'line',
+
+          data: {
+
+            labels:
+              chartData.map(row =>
+
+                new Date(
+                  row.Timestamp
+                ).toLocaleString(
+                  'pt-BR',
+                  {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }
+                )
+
+              ),
+
+            datasets: [
+
+              {
+                label:
+                  'Download Mbps',
+
+                data:
+                  chartData.map(
+                    row =>
+                      Number(
+                        row.DownloadMbps
+                      )
+                  ),
+
+                tension: 0.25,
+
+                pointRadius: 3,
+
+                pointHoverRadius: 6
+              },
+
+
+              {
+                label:
+                  'Upload Mbps',
+
+                data:
+                  chartData.map(
+                    row =>
+                      Number(
+                        row.UploadMbps
+                      )
+                  ),
+
+                tension: 0.25,
+
+                pointRadius: 3,
+
+                pointHoverRadius: 6
+              }
+
+            ]
+          },
+
+
+          options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            interaction: {
+              mode: 'index',
+              intersect: false
+            },
+
+            plugins: {
+
+              legend: {
+
+                labels: {
+                  color: '#e2e8f0'
+                }
+              },
+
+              tooltip: {
+                enabled: true
+              }
+            },
+
+
+            scales: {
+
+              x: {
+
+                ticks: {
+                  color: '#94a3b8',
+                  maxTicksLimit: 8
+                },
+
+                grid: {
+                  color: '#334155'
+                }
+              },
+
+
+              y: {
+
+                beginAtZero: true,
+
+                ticks: {
+                  color: '#94a3b8'
+                },
+
+                grid: {
+                  color: '#334155'
+                }
+              }
+            }
+          }
+        }
+      );
+
+
+    /* =========================
+       ATUALIZAÇÃO
+    ========================= */
+
+    document.getElementById(
+      'update'
+    ).innerText =
+
+      'Atualizado em ' +
+
+      new Date()
+        .toLocaleString('pt-BR');
+
+
+    document.getElementById(
+      'error'
+    ).style.display =
+      'none';
+
+
+    refreshCountdown = 60;
+
+  }
+  catch (error) {
+
+    const errorBox =
+      document.getElementById(
+        'error'
+      );
+
+    errorBox.innerText =
+      'Erro: ' + error.message;
+
+    errorBox.style.display =
+      'block';
+  }
+}
+
+
+/* =========================
+   AUTO REFRESH
+========================= */
+
+loadCSV();
+
+
+setInterval(() => {
+
+  refreshCountdown--;
+
+
+  document.getElementById(
+    'nextRefresh'
+  ).innerText =
+
+    'Próxima atualização em ' +
+    refreshCountdown +
+    's';
+
+
+  if (refreshCountdown <= 0) {
+
+    refreshCountdown = 60;
+
+    loadCSV();
+  }
+
+}, 1000);
+
+</script>
+
+</body>
+</html>

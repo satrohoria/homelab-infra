@@ -1,0 +1,28 @@
+---
+homelab_user: lenilson
+
+homelab_timezone: America/Sao_Paulo
+
+baseline_packages:
+  - curl
+  - wget
+  - git
+  - vim
+  - nano
+  - htop
+  - tree
+  - unzip
+  - ca-certificates
+  - gnupg
+  - lsb-release
+  - rsync
+  - jq
+  - net-tools
+  - dnsutils
+  - iproute2
+  - ethtool
+  - smartmontools
+
+homelab_directories:
+  - /opt/backups
+  - /opt/speedpc
