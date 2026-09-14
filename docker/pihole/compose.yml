@@ -7,23 +7,42 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "8081:80/tcp"
 
     environment:
       TZ: "America/Sao_Paulo"
-      FTLCONF_webserver_api_password: "${PIHOLE_WEBPASSWORD}"
+      FTLCONF_webserver_api_password: "${PIHOLE_PASSWORD}"
       FTLCONF_dns_listeningMode: "ALL"
-      FTLCONF_dns_upstreams: "unbound"
+      FTLCONF_dns_upstreams: "172.30.0.2"
 
     volumes:
       - "./etc-pihole:/etc/pihole"
 
     restart: unless-stopped
 
+    networks:
+      dns-net:
+        ipv4_address: 172.30.0.3
+      caddy-net:
+
   unbound:
     container_name: unbound
     image: mvance/unbound:latest
     restart: unless-stopped
+
     ports:
       - "127.0.0.1:5335:53/tcp"
       - "127.0.0.1:5335:53/udp"
+
+    networks:
+      dns-net:
+        ipv4_address: 172.30.0.2
+
+networks:
+  dns-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+  caddy-net:
+    external: true

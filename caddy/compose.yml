@@ -14,6 +14,6 @@ services:
       - caddy-net
     restart: unless-stopped
 
-networks:
-  caddy-net:
-    external: true
+    networks:
+      caddy-net:
+        ipv4_address: 172.29.0.250
