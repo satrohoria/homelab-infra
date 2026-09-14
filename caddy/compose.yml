@@ -2,18 +2,23 @@ services:
   caddy:
     image: caddy:latest
     container_name: caddy
+
     ports:
       - "80:80"
       - "443:443"
+
     volumes:
       - /opt/speedpc:/srv/speedpc:ro
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data:/data
       - ./config:/config
-    networks:
-      - caddy-net
-    restart: unless-stopped
 
     networks:
       caddy-net:
         ipv4_address: 172.29.0.250
+
+    restart: unless-stopped
+
+networks:
+  caddy-net:
+    external: true
